@@ -1,19 +1,12 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "web/app.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/web/static/$1"
+      "source": "/static/(.*)",
+      "destination": "/web/static/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "web/app.py"
+      "source": "/(.*)",
+      "destination": "/api/index.py"
     }
   ]
 }
