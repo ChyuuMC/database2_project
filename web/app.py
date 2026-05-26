@@ -46,21 +46,59 @@ def wait_for_db():
     return False
 
 # --- HELPER FUNCTION FOR JSON SERIALIZATION ---
+KEY_MAPPING = {
+    'customerid': 'CustomerID',
+    'customername': 'CustomerName',
+    'email': 'Email',
+    'address': 'Address',
+    'city': 'City',
+    'postcode': 'Postcode',
+    'country': 'Country',
+    'shipperid': 'ShipperID',
+    'shippername': 'ShipperName',
+    'phone': 'Phone',
+    'employeeid': 'EmployeeID',
+    'firstname': 'FirstName',
+    'lastname': 'LastName',
+    'department': 'Department',
+    'productid': 'ProductID',
+    'productname': 'ProductName',
+    'price': 'Price',
+    'orderid': 'OrderID',
+    'orderdate': 'OrderDate',
+    'totalamount': 'TotalAmount',
+    'employeename': 'EmployeeName'
+}
+
 def serialize_db_data(data):
     # Converts PostgreSQL Date and Decimal formats to standard strings/floats so Flask can return JSON
+    # Also normalizes column names from lowercase (PostgreSQL default) to CamelCase expected by the frontend
     if isinstance(data, list):
+        serialized_list = []
         for row in data:
+            new_row = {}
             for k, v in row.items():
+                k_norm = KEY_MAPPING.get(k.lower(), k)
                 if isinstance(v, (datetime.date, datetime.datetime)):
-                    row[k] = v.isoformat()
+                    new_row[k_norm] = v.isoformat()
                 elif isinstance(v, decimal.Decimal):
-                    row[k] = float(v)
+                    new_row[k_norm] = float(v)
+                else:
+                    new_row[k_norm] = v
+            serialized_list.append(new_row)
+        return serialized_list
     elif isinstance(data, dict):
+        new_data = {}
         for k, v in data.items():
+            k_norm = KEY_MAPPING.get(k.lower(), k)
             if isinstance(v, (datetime.date, datetime.datetime)):
-                data[k] = v.isoformat()
+                new_data[k_norm] = v.isoformat()
             elif isinstance(v, decimal.Decimal):
-                data[k] = float(v)
+                new_data[k_norm] = float(v)
+            else:
+                new_data[k_norm] = v
+        return new_data
+    return data
 # --- LAZY DATABASE SCHEMA INITIALIZATION ---
 _db_initialized = False
 
@@ -389,7 +427,7 @@ def manage_orders():
                     cursor.execute("SELECT Price FROM Products WHERE ProductID=%s", (data['ProductID'],))
                     res = cursor.fetchone()
                     if res:
-                        data['TotalAmount'] = res['Price']
+                        data['TotalAmount'] = res.get('Price') or res.get('price')
                 
                 sql = """INSERT INTO "Order" (OrderID, OrderDate, TotalAmount, CustomerID, ShipperID, EmployeeID, ProductID) 
                          VALUES (%s, %s, %s, %s, %s, %s, %s)"""
