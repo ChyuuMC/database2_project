@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Processing System - Dashboard</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <h2>OPS Database</h2>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="#dashboard" class="menu-item active" data-tab="dashboard">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="menu-icon"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#customers" class="menu-item" data-tab="customers">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="menu-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span>Customers</span>
+                </a>
+                <a href="#products" class="menu-item" data-tab="products">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="menu-icon"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    <span>Products</span>
+                </a>
+                <a href="#employees" class="menu-item" data-tab="employees">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="menu-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>Employees</span>
+                </a>
+                <a href="#shippers" class="menu-item" data-tab="shippers">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="menu-icon"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                    <span>Shippers</span>
+                </a>
+                <a href="#orders" class="menu-item" data-tab="orders">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="menu-icon"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span>Orders</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="db-status online">
+                    <span class="status-dot"></span>
+                    <span class="status-text">MariaDB: Connected</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-title">
+                    <h1 id="page-title">Dashboard</h1>
+                    <p id="page-subtitle" class="text-muted">Overview of the Order Processing System</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" id="refresh-data-btn">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        <span>Refresh Data</span>
+                    </button>
+                    <button class="btn btn-primary" id="add-entry-btn" style="display: none;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>Add Entry</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- ================= DASHBOARD PANEL ================= -->
+                <section id="panel-dashboard" class="content-panel active">
+                    <!-- KPI Cards Grid -->
+                    <div class="kpi-grid">
+                        <div class="glass-card kpi-card">
+                            <div class="kpi-icon icon-revenue">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            </div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Total Revenue</span>
+                                <h3 class="kpi-value" id="stat-revenue">$0.00</h3>
+                            </div>
+                        </div>
+                        <div class="glass-card kpi-card">
+                            <div class="kpi-icon icon-orders">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            </div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Total Orders</span>
+                                <h3 class="kpi-value" id="stat-orders">0</h3>
+                            </div>
+                        </div>
+                        <div class="glass-card kpi-card">
+                            <div class="kpi-icon icon-avg-price">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                            </div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Avg Product Price</span>
+                                <h3 class="kpi-value" id="stat-avg-price">$0.00</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Entity Counts Section -->
+                    <div class="kpi-subtitle">Database Metrics</div>
+                    <div class="db-metrics-grid">
+                        <div class="glass-card mini-card" data-go-tab="customers">
+                            <h4>Customers</h4>
+                            <div class="count" id="count-customers">0</div>
+                            <span class="link-label">Manage Customers &rarr;</span>
+                        </div>
+                        <div class="glass-card mini-card" data-go-tab="products">
+                            <h4>Products</h4>
+                            <div class="count" id="count-products">0</div>
+                            <span class="link-label">Manage Products &rarr;</span>
+                        </div>
+                        <div class="glass-card mini-card" data-go-tab="employees">
+                            <h4>Employees</h4>
+                            <div class="count" id="count-employees">0</div>
+                            <span class="link-label">Manage Employees &rarr;</span>
+                        </div>
+                        <div class="glass-card mini-card" data-go-tab="shippers">
+                            <h4>Shippers</h4>
+                            <div class="count" id="count-shippers">0</div>
+                            <span class="link-label">Manage Shippers &rarr;</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick View Summary Tables -->
+                    <div class="dashboard-details-grid">
+                        <div class="glass-card detail-box">
+                            <div class="box-header">
+                                <h3>Recent Orders</h3>
+                                <button class="btn btn-text" data-go-tab="orders">View All</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table" id="dashboard-recent-orders-table">
+                                    <thead>
+                                        <tr>
+                                            <th>OrderID</th>
+                                            <th>Customer</th>
+                                            <th>Product</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="glass-card detail-box">
+                            <div class="box-header">
+                                <h3>Featured Products</h3>
+                                <button class="btn btn-text" data-go-tab="products">View All</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table" id="dashboard-featured-products-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ProductID</th>
+                                            <th>Product Name</th>
+                                            <th>Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= CUSTOMERS PANEL ================= -->
+                <section id="panel-customers" class="content-panel">
+                    <div class="table-container glass-card">
+                        <div class="table-header-filters">
+                            <input type="text" class="search-input" id="search-customers" placeholder="Search customers...">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table" id="customers-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Customer Name</th>
+                                        <th>Email</th>
+                                        <th>Address</th>
+                                        <th>City</th>
+                                        <th>Postal Code</th>
+                                        <th>Country</th>
+                                        <th class="actions-col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customers-table-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= PRODUCTS PANEL ================= -->
+                <section id="panel-products" class="content-panel">
+                    <div class="table-container glass-card">
+                        <div class="table-header-filters">
+                            <input type="text" class="search-input" id="search-products" placeholder="Search products...">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table" id="products-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Product Name</th>
+                                        <th>Price</th>
+                                        <th class="actions-col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="products-table-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= EMPLOYEES PANEL ================= -->
+                <section id="panel-employees" class="content-panel">
+                    <div class="table-container glass-card">
+                        <div class="table-header-filters">
+                            <input type="text" class="search-input" id="search-employees" placeholder="Search employees...">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table" id="employees-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Department</th>
+                                        <th class="actions-col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employees-table-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= SHIPPERS PANEL ================= -->
+                <section id="panel-shippers" class="content-panel">
+                    <div class="table-container glass-card">
+                        <div class="table-header-filters">
+                            <input type="text" class="search-input" id="search-shippers" placeholder="Search shippers...">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table" id="shippers-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Shipper Name</th>
+                                        <th>Phone</th>
+                                        <th class="actions-col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="shippers-table-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= ORDERS PANEL ================= -->
+                <section id="panel-orders" class="content-panel">
+                    <div class="table-container glass-card">
+                        <div class="table-header-filters">
+                            <input type="text" class="search-input" id="search-orders" placeholder="Search orders...">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table" id="orders-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Product</th>
+                                        <th>Total Amount</th>
+                                        <th>Order Date</th>
+                                        <th>Employee (Processed)</th>
+                                        <th>Shipper</th>
+                                        <th class="actions-col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- MODAL FORMS -->
+    <!-- ============================================================== -->
+    <div class="modal-backdrop" id="modal-container">
+        <!-- CUSTOMER FORM MODAL -->
+        <div class="modal-content glass-card" id="modal-customer" style="display: none;">
+            <div class="modal-header">
+                <h3 id="customer-modal-title">Add Customer</h3>
+                <button class="btn-close" onclick="closeModal()">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-customer" onsubmit="saveCustomer(event)">
+                <input type="hidden" id="customer-id">
+                <div class="form-grid">
+                    <div class="form-group span-2">
+                        <label for="customer-name">Customer Name *</label>
+                        <input type="text" id="customer-name" required placeholder="e.g. Alice Smith">
+                    </div>
+                    <div class="form-group span-2">
+                        <label for="customer-email">Email Address</label>
+                        <input type="email" id="customer-email" placeholder="e.g. alice@email.com">
+                    </div>
+                    <div class="form-group span-2">
+                        <label for="customer-address">Street Address</label>
+                        <input type="text" id="customer-address" placeholder="e.g. 123 Maple St">
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-city">City</label>
+                        <input type="text" id="customer-city" placeholder="e.g. New York">
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-postcode">Postcode</label>
+                        <input type="text" id="customer-postcode" placeholder="e.g. 10001">
+                    </div>
+                    <div class="form-group span-2">
+                        <label for="customer-country">Country</label>
+                        <input type="text" id="customer-country" placeholder="e.g. USA">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Customer</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- PRODUCT FORM MODAL -->
+        <div class="modal-content glass-card" id="modal-product" style="display: none;">
+            <div class="modal-header">
+                <h3 id="product-modal-title">Add Product</h3>
+                <button class="btn-close" onclick="closeModal()">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-product" onsubmit="saveProduct(event)">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label for="product-name">Product Name *</label>
+                    <input type="text" id="product-name" required placeholder="e.g. Mechanical Keyboard">
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Price ($) *</label>
+                    <input type="number" id="product-price" step="0.01" min="0.01" required placeholder="e.g. 99.99">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- EMPLOYEE FORM MODAL -->
+        <div class="modal-content glass-card" id="modal-employee" style="display: none;">
+            <div class="modal-header">
+                <h3 id="employee-modal-title">Add Employee</h3>
+                <button class="btn-close" onclick="closeModal()">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-employee" onsubmit="saveEmployee(event)">
+                <input type="hidden" id="employee-id">
+                <div class="form-group">
+                    <label for="employee-firstname">First Name *</label>
+                    <input type="text" id="employee-firstname" required placeholder="e.g. John">
+                </div>
+                <div class="form-group">
+                    <label for="employee-lastname">Last Name *</label>
+                    <input type="text" id="employee-lastname" required placeholder="e.g. Doe">
+                </div>
+                <div class="form-group">
+                    <label for="employee-department">Department</label>
+                    <input type="text" id="employee-department" placeholder="e.g. Sales">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Employee</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- SHIPPER FORM MODAL -->
+        <div class="modal-content glass-card" id="modal-shipper" style="display: none;">
+            <div class="modal-header">
+                <h3 id="shipper-modal-title">Add Shipper</h3>
+                <button class="btn-close" onclick="closeModal()">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-shipper" onsubmit="saveShipper(event)">
+                <input type="hidden" id="shipper-id">
+                <div class="form-group">
+                    <label for="shipper-name">Shipper Name *</label>
+                    <input type="text" id="shipper-name" required placeholder="e.g. Speedy Express">
+                </div>
+                <div class="form-group">
+                    <label for="shipper-phone">Phone Number</label>
+                    <input type="text" id="shipper-phone" placeholder="e.g. 555-1000">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Shipper</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ORDER FORM MODAL -->
+        <div class="modal-content glass-card modal-large" id="modal-order" style="display: none;">
+            <div class="modal-header">
+                <h3 id="order-modal-title">Add Order</h3>
+                <button class="btn-close" onclick="closeModal()">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-order" onsubmit="saveOrder(event)">
+                <input type="hidden" id="order-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="order-customer">Customer *</label>
+                        <select id="order-customer" required>
+                            <!-- Loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="order-product">Product *</label>
+                        <select id="order-product" required onchange="updateOrderTotalAmount()">
+                            <!-- Loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="order-employee">Processed By Employee *</label>
+                        <select id="order-employee" required>
+                            <!-- Loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="order-shipper">Shipper *</label>
+                        <select id="order-shipper" required>
+                            <!-- Loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="order-date">Order Date *</label>
+                        <input type="date" id="order-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="order-amount">Total Amount ($) *</label>
+                        <input type="number" id="order-amount" step="0.01" min="0.00" required placeholder="Leave blank to auto-fetch price">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script file -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
