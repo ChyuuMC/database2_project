@@ -2,19 +2,20 @@ version: '3.8'
 
 services:
   db:
-    image: mariadb:10.11
+    image: postgres:16-alpine
     container_name: order_processing_db
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: dbpassword
-      MARIADB_DATABASE: OrderProcessingDB
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: dbpassword
+      POSTGRES_DB: OrderProcessingDB
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      test: ["CMD-SHELL", "pg_isready -U root -d OrderProcessingDB"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -28,6 +29,7 @@ services:
       - "5000:5000"
     environment:
       - DB_HOST=db
+      - DB_PORT=5432
       - DB_USER=root
       - DB_PASSWORD=dbpassword
       - DB_NAME=OrderProcessingDB

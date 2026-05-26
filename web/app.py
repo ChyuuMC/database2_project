@@ -3,20 +3,31 @@ import time
 import datetime
 import decimal
 from flask import Flask, jsonify, request, send_from_directory
-import pymysql
-import pymysql.cursors
+import psycopg2
+import psycopg2.extras
+from init_sql_data import INIT_SQL
 
 app = Flask(__name__)
 
 # --- DATABASE CONNECTION FUNCTION ---
 def get_db_connection():
-    # Establish a connection to the MariaDB container
-    return pymysql.connect(
-        host=os.environ.get('DB_HOST', 'db'),
+    # Check if a database URL connection string is provided (standard for Vercel/Neon Postgres)
+    db_url = (
+        os.environ.get('DATABASE_URL') or 
+        os.environ.get('POSTGRES_URL') or 
+        os.environ.get('POSTGRES_URL_NON_POOLING')
+    )
+    if db_url:
+        return psycopg2.connect(db_url, cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    # Fall back to individual variables, defaulting to local PostgreSQL settings
+    return psycopg2.connect(
+        host=os.environ.get('DB_HOST', 'localhost'),
         user=os.environ.get('DB_USER', 'root'),
         password=os.environ.get('DB_PASSWORD', 'dbpassword'),
         database=os.environ.get('DB_NAME', 'OrderProcessingDB'),
-        cursorclass=pymysql.cursors.DictCursor # Returns rows as standard Python dictionaries
+        port=os.environ.get('DB_PORT', '5432'),
+        cursor_factory=psycopg2.extras.RealDictCursor
     )
 
 def wait_for_db():
@@ -26,17 +37,17 @@ def wait_for_db():
         try:
             conn = get_db_connection()
             conn.close()
-            print("Connected to MariaDB!", flush=True)
+            print("Connected to PostgreSQL!", flush=True)
             return True
         except Exception as e:
-            print("Waiting for database connection...", flush=True)
+            print(f"Waiting for database connection... ({e})", flush=True)
             time.sleep(2)
             retries -= 1
     return False
 
 # --- HELPER FUNCTION FOR JSON SERIALIZATION ---
 def serialize_db_data(data):
-    # Converts PyMySQL Date and Decimal formats to standard strings/floats so Flask can return JSON
+    # Converts PostgreSQL Date and Decimal formats to standard strings/floats so Flask can return JSON
     if isinstance(data, list):
         for row in data:
             for k, v in row.items():
@@ -56,39 +67,18 @@ _db_initialized = False
 def init_db_if_empty(conn):
     try:
         with conn.cursor() as cursor:
-            # Check if Customer table exists
-            cursor.execute("SHOW TABLES LIKE 'Customer'")
-            if not cursor.fetchone():
+            # Check if Customer table exists in PostgreSQL
+            cursor.execute("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'customer')")
+            row = cursor.fetchone()
+            if not row or not row['exists']:
                 print("Database is empty. Initializing tables and seeding sample data...", flush=True)
                 
-                # Resolve init.sql path relative to the app.py file
-                possible_paths = [
-                    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db', 'init.sql'),
-                    os.path.join(os.path.dirname(__file__), 'db', 'init.sql'),
-                    'db/init.sql'
-                ]
-                sql_path = None
-                for p in possible_paths:
-                    if os.path.exists(p):
-                        sql_path = p
-                        break
-                
-                if not sql_path:
-                    print("Error: Could not locate init.sql to seed the database.", flush=True)
-                    return
-                
-                with open(sql_path, 'r', encoding='utf-8') as f:
-                    sql_lines = f.readlines()
-                
-                # Reconstruct queries, skipping CREATE DATABASE and USE statements to support pre-allocated hosted DB schemas
+                # Reconstruct queries from INIT_SQL string
                 queries = []
                 current_query = []
-                for line in sql_lines:
+                for line in INIT_SQL.splitlines():
                     clean_line = line.strip()
                     if not clean_line or clean_line.startswith('--') or clean_line.startswith('#'):
-                        continue
-                    
-                    if clean_line.upper().startswith('CREATE DATABASE') or clean_line.upper().startswith('USE '):
                         continue
                     
                     current_query.append(line)
@@ -96,7 +86,7 @@ def init_db_if_empty(conn):
                         queries.append("".join(current_query))
                         current_query = []
                 
-                # Execute each SQL statement individually to avoid needing multi-statement driver flags
+                # Execute each SQL statement individually
                 for query in queries:
                     query = query.strip()
                     if query:
@@ -135,11 +125,11 @@ def get_stats():
         conn = get_db_connection()
         with conn.cursor() as cursor:
             # SQL COUNT aggregate functions
-            cursor.execute("SELECT COUNT(*) as total_orders FROM `Order`")
+            cursor.execute("SELECT COUNT(*) as total_orders FROM \"Order\"")
             total_orders = cursor.fetchone()['total_orders']
             
             # SQL SUM aggregate functions
-            cursor.execute("SELECT SUM(TotalAmount) as total_revenue FROM `Order`")
+            cursor.execute("SELECT SUM(TotalAmount) as total_revenue FROM \"Order\"")
             total_revenue = cursor.fetchone()['total_revenue'] or 0
             
             # SQL AVG aggregate functions
@@ -379,7 +369,7 @@ def manage_orders():
                 # SQL JOIN statements to resolve name details for display
                 sql = """SELECT o.*, c.CustomerName, s.ShipperName, 
                                 CONCAT(e.FirstName, ' ', e.LastName) as EmployeeName, p.ProductName
-                         FROM `Order` o
+                         FROM "Order" o
                          LEFT JOIN Customer c ON o.CustomerID = c.CustomerID
                          LEFT JOIN Shipper s ON o.ShipperID = s.ShipperID
                          LEFT JOIN Employee e ON o.EmployeeID = e.EmployeeID
@@ -391,7 +381,7 @@ def manage_orders():
             elif request.method == 'POST':
                 data = request.json
                 if not data.get('OrderID'):
-                    cursor.execute("SELECT MAX(OrderID) as max_id FROM `Order`")
+                    cursor.execute("SELECT MAX(OrderID) as max_id FROM \"Order\"")
                     data['OrderID'] = (cursor.fetchone()['max_id'] or 0) + 1
                 
                 # Fetch product price if TotalAmount is omitted
@@ -401,7 +391,7 @@ def manage_orders():
                     if res:
                         data['TotalAmount'] = res['Price']
                 
-                sql = """INSERT INTO `Order` (OrderID, OrderDate, TotalAmount, CustomerID, ShipperID, EmployeeID, ProductID) 
+                sql = """INSERT INTO "Order" (OrderID, OrderDate, TotalAmount, CustomerID, ShipperID, EmployeeID, ProductID) 
                          VALUES (%s, %s, %s, %s, %s, %s, %s)"""
                 cursor.execute(sql, (
                     data['OrderID'], data['OrderDate'], data.get('TotalAmount', 0), 
@@ -421,7 +411,7 @@ def detail_order(id):
         with conn.cursor() as cursor:
             if request.method == 'PUT':
                 data = request.json
-                sql = """UPDATE `Order` SET OrderDate=%s, TotalAmount=%s, CustomerID=%s, ShipperID=%s, EmployeeID=%s, ProductID=%s 
+                sql = """UPDATE "Order" SET OrderDate=%s, TotalAmount=%s, CustomerID=%s, ShipperID=%s, EmployeeID=%s, ProductID=%s 
                          WHERE OrderID=%s"""
                 cursor.execute(sql, (
                     data['OrderDate'], data['TotalAmount'], data.get('CustomerID'), 
@@ -431,7 +421,7 @@ def detail_order(id):
                 return jsonify({'message': 'Order updated!'})
                 
             elif request.method == 'DELETE':
-                cursor.execute("DELETE FROM `Order` WHERE OrderID=%s", (id,))
+                cursor.execute("DELETE FROM \"Order\" WHERE OrderID=%s", (id,))
                 conn.commit()
                 return jsonify({'message': 'Order deleted!'})
     except Exception as e:

@@ -1,3 +1,5 @@
+# PostgreSQL schema and data seeding script
+INIT_SQL = """
 CREATE TABLE IF NOT EXISTS Customer (
   CustomerID INT PRIMARY KEY,
   CustomerName VARCHAR(100) NOT NULL,
@@ -150,3 +152,4 @@ INSERT INTO "Order" (OrderID, OrderDate, TotalAmount, CustomerID, ShipperID, Emp
 (1018, '2023-01-27', 15.00, 15, 3, 117, 17), 
 (1019, '2023-01-28', 50.00, 16, 2, 118, 19), 
 (1020, '2023-01-29', 150.00, 17, 5, 119, 20);
+"""
