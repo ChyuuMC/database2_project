@@ -50,7 +50,74 @@ def serialize_db_data(data):
                 data[k] = v.isoformat()
             elif isinstance(v, decimal.Decimal):
                 data[k] = float(v)
-    return data
+# --- LAZY DATABASE SCHEMA INITIALIZATION ---
+_db_initialized = False
+
+def init_db_if_empty(conn):
+    try:
+        with conn.cursor() as cursor:
+            # Check if Customer table exists
+            cursor.execute("SHOW TABLES LIKE 'Customer'")
+            if not cursor.fetchone():
+                print("Database is empty. Initializing tables and seeding sample data...", flush=True)
+                
+                # Resolve init.sql path relative to the app.py file
+                possible_paths = [
+                    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db', 'init.sql'),
+                    os.path.join(os.path.dirname(__file__), 'db', 'init.sql'),
+                    'db/init.sql'
+                ]
+                sql_path = None
+                for p in possible_paths:
+                    if os.path.exists(p):
+                        sql_path = p
+                        break
+                
+                if not sql_path:
+                    print("Error: Could not locate init.sql to seed the database.", flush=True)
+                    return
+                
+                with open(sql_path, 'r', encoding='utf-8') as f:
+                    sql_lines = f.readlines()
+                
+                # Reconstruct queries, skipping CREATE DATABASE and USE statements to support pre-allocated hosted DB schemas
+                queries = []
+                current_query = []
+                for line in sql_lines:
+                    clean_line = line.strip()
+                    if not clean_line or clean_line.startswith('--') or clean_line.startswith('#'):
+                        continue
+                    
+                    if clean_line.upper().startswith('CREATE DATABASE') or clean_line.upper().startswith('USE '):
+                        continue
+                    
+                    current_query.append(line)
+                    if clean_line.endswith(';'):
+                        queries.append("".join(current_query))
+                        current_query = []
+                
+                # Execute each SQL statement individually to avoid needing multi-statement driver flags
+                for query in queries:
+                    query = query.strip()
+                    if query:
+                        cursor.execute(query)
+                conn.commit()
+                print("Database tables created and sample data seeded successfully!", flush=True)
+    except Exception as e:
+        print(f"Failed to auto-seed database: {e}", flush=True)
+
+@app.before_request
+def check_db_initialization():
+    global _db_initialized
+    if not _db_initialized:
+        _db_initialized = True
+        try:
+            conn = get_db_connection()
+            init_db_if_empty(conn)
+            conn.close()
+        except Exception as e:
+            _db_initialized = False
+            print(f"Lazy database initialization check failed: {e}", flush=True)
 
 # --- ROUTING FOR FRONTEND ---
 @app.route('/')
