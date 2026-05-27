@@ -1,40 +1,34 @@
-/* 
-   Database 2 Project - Order Processing System
-   Clean, Professional Academic Theme
-   Designed for Information Management Database Lab
-*/
-
 :root {
     /* Main Layout Palette */
-    --bg-app: #f8fafc;               /* Soft off-white */
-    --bg-sidebar: #1e293b;           /* Slate navy sidebar */
-    --bg-card: #ffffff;              /* Crisp white for cards */
+    --bg-app: #f8fafc;
+    --bg-sidebar: #1e293b;
+    --bg-card: #ffffff;
     --bg-card-hover: #ffffff;
-    --border-color: #e2e8f0;         /* Light gray border */
-    --border-color-hover: #cbd5e1;   /* Medium gray border for hover states */
-    --text-primary: #0f172a;         /* Near black slate */
-    --text-secondary: #475569;       /* Muted dark gray */
-    --text-muted: #64748b;           /* Muted cool gray */
-    
-    /* Academic Theme Accent Colors */
-    --color-primary: #1e40af;        /* Classic Navy */
+    --border-color: #e2e8f0;
+    --border-color-hover: #cbd5e1;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+
+    /* Accent Colors */
+    --color-primary: #1e40af;
     --color-primary-glow: rgba(30, 64, 175, 0.08);
-    --color-accent: #3b82f6;         /* Royal Blue */
+    --color-accent: #3b82f6;
     --color-accent-glow: rgba(59, 130, 246, 0.1);
-    
+
     /* Status Colors */
-    --color-success: #10b981;        /* Emerald Green */
-    --color-success-bg: #ecfdf5;     /* Soft Green Tint */
-    --color-danger: #ef4444;         /* Crimson Red */
-    --color-danger-bg: #fef2f2;      /* Soft Red Tint */
-    --color-warning: #f59e0b;        /* Amber Gold */
-    --color-warning-bg: #fffbeb;     /* Soft Amber Tint */
-    
+    --color-success: #10b981;
+    --color-success-bg: #ecfdf5;
+    --color-danger: #ef4444;
+    --color-danger-bg: #fef2f2;
+    --color-warning: #f59e0b;
+    --color-warning-bg: #fffbeb;
+
     /* Shadows & Border Radii */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-    
+
     --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --transition-fast: 0.15s ease;
     --transition-normal: 0.2s ease-in-out;
@@ -73,13 +67,16 @@ body {
     width: 6px;
     height: 6px;
 }
+
 ::-webkit-scrollbar-track {
     background: rgba(226, 232, 240, 0.5);
 }
+
 ::-webkit-scrollbar-thumb {
     background: rgba(148, 163, 184, 0.3);
     border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(148, 163, 184, 0.5);
 }
@@ -87,7 +84,7 @@ body {
 /* Sidebar Styling */
 .sidebar {
     background-color: var(--bg-sidebar);
-    border-right: 1px solid rgba(255,255,255,0.05);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -99,7 +96,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .logo-icon {
@@ -134,7 +131,8 @@ body {
     align-items: center;
     gap: 12px;
     padding: 10px 14px;
-    color: #94a3b8; /* Light slate gray */
+    color: #94a3b8;
+    /* Light slate gray */
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
@@ -163,14 +161,14 @@ body {
 
 .menu-divider {
     height: 1px;
-    background-color: rgba(255,255,255,0.05);
+    background-color: rgba(255, 255, 255, 0.05);
     margin: 12px 14px;
 }
 
 .sidebar-footer {
     padding: 16px 20px;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    background-color: rgba(0,0,0,0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.15);
 }
 
 .db-status {
@@ -300,7 +298,7 @@ body {
     font-size: 12px;
 }
 
-/* Crisp Clean Card System */
+/* Card System */
 .glass-card {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -331,8 +329,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Dashboard Panel Layout */
@@ -613,8 +618,13 @@ body {
 }
 
 @keyframes fadeInBg {
-    from { background-color: rgba(15, 23, 42, 0); }
-    to { background-color: rgba(15, 23, 42, 0.4); }
+    from {
+        background-color: rgba(15, 23, 42, 0);
+    }
+
+    to {
+        background-color: rgba(15, 23, 42, 0.4);
+    }
 }
 
 .modal-content {
@@ -632,8 +642,15 @@ body {
 }
 
 @keyframes scaleIn {
-    from { transform: scale(0.97); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0.97);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .modal-header {
@@ -691,7 +708,8 @@ body {
     color: var(--text-secondary);
 }
 
-.form-group input, .form-group select {
+.form-group input,
+.form-group select {
     background-color: #ffffff;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
@@ -703,7 +721,8 @@ body {
     transition: var(--transition-fast);
 }
 
-.form-group input:focus, .form-group select:focus {
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
     border-color: var(--color-accent);
     box-shadow: 0 0 0 3px var(--color-accent-glow);
@@ -726,7 +745,7 @@ body {
 /* App Footer */
 .app-footer {
     text-align: center;
-    padding: 12px;
+    padding: 15px;
     font-size: 12px;
     color: var(--text-secondary);
     border-top: 1px solid var(--border-color);
